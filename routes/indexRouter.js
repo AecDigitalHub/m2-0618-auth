@@ -1,4 +1,5 @@
 const express = require('express');
+const { ensureLoggedIn, hasRole } = require('../middleware/ensureLogin');
 const router = express.Router();
 
 router.get('/',(req,res) => {
@@ -6,12 +7,12 @@ router.get('/',(req,res) => {
 })
 
 
-router.get('/private',(req,res) => {
-    if(req.session.currentUser){
-        res.render('private-page');
-    }else{
-        res.redirect('/');
-    }
+router.get('/private', [
+    ensureLoggedIn('/auth/login'), 
+    hasRole('ADMIN'),
+    hasRole('GUEST')
+] , (req,res) => {
+    res.render('private-page');
 })
 
 module.exports = router;
